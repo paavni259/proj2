@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Demo - SecurePass{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary mb-3">
+            <i class="fas fa-eye me-3"></i>Demo Analysis
+        </h1>
+        <p class="lead text-muted">
+            See how SecurePass analyzes password security with a real example
+        </p>
+    </div>
+
+    <!-- Demo Password -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="card security-card">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="fas fa-key me-2"></i>Demo Password Analysis
+                    </h3>
+                    <div class="text-center mb-4">
+                        <h4 class="text-muted">Password: <code>{{ demo_password }}</code></h4>
+                        <p class="text-muted">This is a common password pattern for demonstration purposes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demo Results -->
+    <div class="row">
+        <!-- Breach Check Results -->
+        <div class="col-lg-4 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon {% if analysis.is_breached %}breach{% else %}strength{% endif %} mb-3">
+                        {% if analysis.is_breached %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% else %}
+                            <i class="fas fa-check-circle"></i>
+                        {% endif %}
+                    </div>
+                    <h5 class="card-title">Breach Status</h5>
+                    {% if analysis.is_breached %}
+                        <p class="card-text text-danger fw-bold">
+                            Found in {{ analysis.breach_count:, }} breaches!
+                        </p>
+                        <div class="alert alert-danger alert-custom">
+                            ⚠️ This password has been compromised {{ analysis.breach_count:, }} times!
+                        </div>
+                    {% else %}
+                        <p class="card-text text-success fw-bold">No breaches found</p>
+                        <div class="alert alert-success alert-custom">
+                            ✅ Password not found in breach database
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Strength Analysis -->
+        <div class="col-lg-4 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon strength mb-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5 class="card-title">Strength Analysis</h5>
+                    <div class="mb-3">
+                        <div class="strength-indicator w-100 mb-2 
+                            {% if analysis.strength_analysis.score >= 70 %}strength-strong
+                            {% elif analysis.strength_analysis.score >= 40 %}strength-medium
+                            {% else %}strength-weak{% endif %}"></div>
+                        <span class="fw-bold">{{ analysis.strength_analysis.strength }}</span>
+                        <span class="text-muted ms-2">({{ analysis.strength_analysis.score }}/100)</span>
+                    </div>
+                    <div class="row text-start">
+                        <div class="col-6">
+                            <small>
+                                <i class="fas fa-{% if analysis.strength_analysis.has_upper %}check text-success{% else %}times text-danger{% endif %} me-1"></i>
+                                Uppercase
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small>
+                                <i class="fas fa-{% if analysis.strength_analysis.has_lower %}check text-success{% else %}times text-danger{% endif %} me-1"></i>
+                                Lowercase
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small>
+                                <i class="fas fa-{% if analysis.strength_analysis.has_digit %}check text-success{% else %}times text-danger{% endif %} me-1"></i>
+                                Numbers
+                            </small>
+                        </div>
+                        <div class="col-6">
+                            <small>
+                                <i class="fas fa-{% if analysis.strength_analysis.has_special %}check text-success{% else %}times text-danger{% endif %} me-1"></i>
+                                Special
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Suggestions -->
+        <div class="col-lg-4 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon suggestions mb-3">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h5 class="card-title">Security Suggestions</h5>
+                    <div class="text-start">
+                        {% for suggestion in analysis.suggestions %}
+                            <div class="mb-2">
+                                <small>{{ suggestion }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analysis -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card security-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>Detailed Analysis
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for feedback in analysis.strength_analysis.feedback %}
+                        <div class="mb-2">{{ feedback }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Try It Yourself -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="card security-card">
+                <div class="card-body p-5">
+                    <h3 class="mb-3">
+                        <i class="fas fa-rocket me-2"></i>Ready to Test Your Own Passwords?
+                    </h3>
+                    <p class="lead mb-4">
+                        Try SecurePass with your own passwords to see how secure they really are
+                    </p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary-custom btn-lg">
+                        <i class="fas fa-shield-alt me-2"></i>Check Your Passwords Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Tips -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-graduation-cap me-2"></i>Password Security Tips
+            </h3>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-check-circle text-success me-2"></i>Do's
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Use at least 12 characters</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Include uppercase and lowercase letters</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Add numbers and special characters</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Use unique passwords for each account</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-success me-2"></i>Consider using a password manager</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-times-circle text-danger me-2"></i>Don'ts
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Don't use dictionary words</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Avoid personal information</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Don't use sequential characters (123, abc)</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Avoid repeated characters (aaa, 111)</li>
+                        <li class="mb-2"><i class="fas fa-arrow-right text-danger me-2"></i>Don't reuse passwords across sites</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

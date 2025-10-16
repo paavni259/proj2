@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-container">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary mb-3">
+            <i class="fas fa-shield-alt me-3"></i>SecurePass
+        </h1>
+        <p class="lead text-muted">
+            Comprehensive password security analysis using breach databases and strength evaluation
+        </p>
+    </div>
+
+    <!-- Password Checker Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card security-card">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="fas fa-lock me-2"></i>Check Your Password Security
+                    </h3>
+                    
+                    <form id="passwordForm">
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold">
+                                <i class="fas fa-key me-2"></i>Enter Password to Analyze
+                            </label>
+                            <div class="input-group">
+                                <input type="password" 
+                                       class="form-control form-control-lg" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Enter your password..."
+                                       required>
+                                <button class="btn btn-outline-secondary" 
+                                        type="button" 
+                                        id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Your password is never stored or transmitted in plain text
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" 
+                                    class="btn btn-primary-custom btn-lg" 
+                                    id="checkButton">
+                                <span class="button-text">
+                                    <i class="fas fa-search me-2"></i>Analyze Password Security
+                                </span>
+                                <span class="loading">
+                                    <span class="spinner-border spinner-border-sm me-2"></span>Analyzing...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsSection" class="mt-5" style="display: none;">
+        <div class="row">
+            <!-- Breach Check Results -->
+            <div class="col-lg-4 mb-4">
+                <div class="card security-card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon breach mb-3" id="breachIcon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h5 class="card-title">Breach Status</h5>
+                        <p class="card-text" id="breachStatus">Checking...</p>
+                        <div class="alert alert-custom" id="breachAlert" style="display: none;">
+                            <span id="breachMessage"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Strength Analysis -->
+            <div class="col-lg-4 mb-4">
+                <div class="card security-card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon strength mb-3">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5 class="card-title">Strength Analysis</h5>
+                        <div class="mb-3">
+                            <div class="strength-indicator w-100 mb-2" id="strengthBar"></div>
+                            <span class="fw-bold" id="strengthLevel">Analyzing...</span>
+                            <span class="text-muted ms-2" id="strengthScore"></span>
+                        </div>
+                        <div id="strengthDetails"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Suggestions -->
+            <div class="col-lg-4 mb-4">
+                <div class="card security-card h-100">
+                    <div class="card-body text-center">
+                        <div class="feature-icon suggestions mb-3">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h5 class="card-title">Security Suggestions</h5>
+                        <div id="suggestionsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analysis -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card security-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clipboard-list me-2"></i>Detailed Analysis
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="detailedFeedback"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="text-center mb-4">Why Choose SecurePass?</h3>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon breach">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h5 class="card-title">Breach Detection</h5>
+                    <p class="card-text">
+                        Checks against HaveIBeenPwned database with over 11 billion compromised accounts
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon strength">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5 class="card-title">Strength Analysis</h5>
+                    <p class="card-text">
+                        Comprehensive evaluation based on length, complexity, and common patterns
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card security-card h-100">
+                <div class="card-body text-center">
+                    <div class="feature-icon suggestions">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h5 class="card-title">Smart Suggestions</h5>
+                    <p class="card-text">
+                        Personalized recommendations to improve your password security
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('passwordForm');
+    const passwordInput = document.getElementById('password');
+    const toggleButton = document.getElementById('togglePassword');
+    const checkButton = document.getElementById('checkButton');
+    const resultsSection = document.getElementById('resultsSection');
+
+    // Toggle password visibility
+    toggleButton.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = toggleButton.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const password = passwordInput.value.trim();
+        if (!password) {
+            alert('Please enter a password to analyze');
+            return;
+        }
+
+        // Show loading state
+        checkButton.querySelector('.button-text').style.display = 'none';
+        checkButton.querySelector('.loading').style.display = 'inline-block';
+        checkButton.disabled = true;
+
+        // Make API request
+        fetch('/check', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password: password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            displayResults(data);
+        })
+        .catch(error => {
+            alert('Error: ' + error.message);
+        })
+        .finally(() => {
+            // Hide loading state
+            checkButton.querySelector('.button-text').style.display = 'inline-block';
+            checkButton.querySelector('.loading').style.display = 'none';
+            checkButton.disabled = false;
+        });
+    });
+
+    function displayResults(data) {
+        // Show results section
+        resultsSection.style.display = 'block';
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+        // Update breach status
+        updateBreachStatus(data);
+        
+        // Update strength analysis
+        updateStrengthAnalysis(data);
+        
+        // Update suggestions
+        updateSuggestions(data);
+        
+        // Update detailed feedback
+        updateDetailedFeedback(data);
+    }
+
+    function updateBreachStatus(data) {
+        const breachIcon = document.getElementById('breachIcon');
+        const breachStatus = document.getElementById('breachStatus');
+        const breachAlert = document.getElementById('breachAlert');
+        const breachMessage = document.getElementById('breachMessage');
+
+        if (data.is_breached) {
+            breachIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+            breachStatus.textContent = `Found in ${data.breach_count.toLocaleString()} breaches`;
+            breachAlert.className = 'alert alert-danger alert-custom';
+            breachMessage.textContent = `⚠️ This password has been compromised ${data.breach_count.toLocaleString()} times!`;
+            breachAlert.style.display = 'block';
+        } else {
+            breachIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            breachStatus.textContent = 'No breaches found';
+            breachAlert.className = 'alert alert-success alert-custom';
+            breachMessage.textContent = '✅ Password not found in breach database';
+            breachAlert.style.display = 'block';
+        }
+    }
+
+    function updateStrengthAnalysis(data) {
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthLevel = document.getElementById('strengthLevel');
+        const strengthScore = document.getElementById('strengthScore');
+        const strengthDetails = document.getElementById('strengthDetails');
+
+        // Update strength bar
+        strengthBar.className = 'strength-indicator w-100 mb-2';
+        if (data.strength_score >= 70) {
+            strengthBar.classList.add('strength-strong');
+        } else if (data.strength_score >= 40) {
+            strengthBar.classList.add('strength-medium');
+        } else {
+            strengthBar.classList.add('strength-weak');
+        }
+
+        // Update strength level and score
+        strengthLevel.textContent = data.strength_level;
+        strengthScore.textContent = `(${data.strength_score}/100)`;
+
+        // Update character analysis
+        const charAnalysis = `
+            <div class="row text-start">
+                <div class="col-6">
+                    <small>
+                        <i class="fas fa-${data.has_upper ? 'check text-success' : 'times text-danger'} me-1"></i>
+                        Uppercase
+                    </small>
+                </div>
+                <div class="col-6">
+                    <small>
+                        <i class="fas fa-${data.has_lower ? 'check text-success' : 'times text-danger'} me-1"></i>
+                        Lowercase
+                    </small>
+                </div>
+                <div class="col-6">
+                    <small>
+                        <i class="fas fa-${data.has_digit ? 'check text-success' : 'times text-danger'} me-1"></i>
+                        Numbers
+                    </small>
+                </div>
+                <div class="col-6">
+                    <small>
+                        <i class="fas fa-${data.has_special ? 'check text-success' : 'times text-danger'} me-1"></i>
+                        Special
+                    </small>
+                </div>
+            </div>
+        `;
+        strengthDetails.innerHTML = charAnalysis;
+    }
+
+    function updateSuggestions(data) {
+        const suggestionsList = document.getElementById('suggestionsList');
+        suggestionsList.innerHTML = data.suggestions.map(suggestion => 
+            `<div class="mb-2"><small>${suggestion}</small></div>`
+        ).join('');
+    }
+
+    function updateDetailedFeedback(data) {
+        const detailedFeedback = document.getElementById('detailedFeedback');
+        detailedFeedback.innerHTML = data.feedback.map(feedback => 
+            `<div class="mb-2">${feedback}</div>`
+        ).join('');
+    }
+});
+</script>
+{% endblock %}
